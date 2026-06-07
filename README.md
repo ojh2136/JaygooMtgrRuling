@@ -13,5 +13,6 @@ Open `index.html` directly in a browser, or serve this folder locally. The app i
 - An opponent response slot for stack interactions such as counterspells cast after a spell and its cast triggers.
 - Judge-context controls for casting player, whether mana was spent, and timing.
 - Confidence labels and missing-info prompts for ambiguous live rulings.
+- Static board-state explanations for continuous effects such as Blood Moon affecting nonbasic lands.
 
 The built-in rule summaries are educational references, not tournament authority. For official calls, verify against the current Wizards of the Coast Comprehensive Rules, Magic Tournament Rules, Infraction Procedure Guide, and Oracle card text.

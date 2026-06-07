@@ -822,6 +822,55 @@ function describeBoardCard(card, side) {
   return `${card.name} (${side})`;
 }
 
+function landSubtypeSummary(card) {
+  const typeLine = `${card.typeLine || ""}`;
+  const subtypes = typeLine.split("—")[1]?.trim();
+  return subtypes || "no printed basic land subtype";
+}
+
+function buildStaticBoardEngine() {
+  const myCards = liveBoard.mine.map((card) => ({ ...card, side: "my board" }));
+  const opponentCards = liveBoard.opponent.map((card) => ({ ...card, side: "opponent board" }));
+  const allCards = [...myCards, ...opponentCards];
+  const analyzed = allCards.map((card) => classifyCard(card));
+  const bloodMoon = analyzed.find((card) => card.features.bloodMoonEffect);
+  const nonbasicLands = analyzed.filter((card) => card !== bloodMoon && card.features.nonbasicLand);
+  const ruleIds = ["priority"];
+  const steps = [];
+  const facts = [...new Set(analyzed.flatMap((card) => card.facts || []))];
+
+  if (bloodMoon && nonbasicLands.length) {
+    addRule(ruleIds, "layers");
+    steps.push(`${bloodMoon.name} creates a continuous effect that applies to nonbasic lands on the battlefield.`);
+    steps.push(`${nonbasicLands.map((card) => describeBoardCard(card, card.side)).join(", ")} ${nonbasicLands.length === 1 ? "is" : "are"} nonbasic land${nonbasicLands.length === 1 ? "" : "s"}, so ${bloodMoon.name} applies.`);
+    nonbasicLands.forEach((land) => {
+      steps.push(`${land.name} becomes a Mountain. It has the Mountain subtype and the intrinsic mana ability "{T}: Add {R}."`);
+      steps.push(`${land.name} loses its printed rules text and other land types it had before, unless another effect is adding something back.`);
+    });
+    steps.push("This does not make the land basic. It remains nonbasic, but its land type and abilities are changed by the continuous effect.");
+    steps.push("This effect does not use the stack. It applies as soon as the land is on the battlefield while Blood Moon is active.");
+    return {
+      title: "Blood Moon and nonbasic lands",
+      steps,
+      ruleIds,
+      engine: {
+        title: "Continuous effect and layers",
+        summary: `${bloodMoon.name} changes each nonbasic land into a Mountain while its effect applies.`,
+        facts: ["Clear ruling", ...facts]
+      }
+    };
+  }
+
+  const fallback = buildInteractionEngine([...liveBoard.mine, ...liveBoard.opponent]);
+  return {
+    ...fallback,
+    engine: {
+      ...fallback.engine,
+      facts: ["Likely ruling", ...fallback.engine.facts]
+    }
+  };
+}
+
 function buildCastInteractionEngine() {
   const castCard = liveBoard.cast;
   if (!castCard) {
@@ -851,6 +900,7 @@ function buildCastInteractionEngine() {
   const uncounterableCards = analyzedBoard.filter((card) => card.features.makesYourSpellsUncounterable && card.side === "my board");
   const instantSorceryCastTriggers = analyzedBoard.filter((card) => card.side === "my board" && card.features.instantSorceryCastTrigger);
   const krarkTriggers = analyzedBoard.filter((card) => card.side === "my board" && card.features.krarkStyleTrigger);
+  const bloodMoonEffects = analyzedBoard.filter((card) => card.features.bloodMoonEffect);
   let originalCounteredByResponse = false;
   const castControllerText = liveBoard.castController === "opponent" ? "opponent" : "you";
   const castControllerPossessive = liveBoard.castController === "opponent" ? "opponent's" : "your";
@@ -882,7 +932,22 @@ function buildCastInteractionEngine() {
     };
   }
 
-  steps.push(`${castCard.name} is the object being cast by ${castControllerText}, so it starts on the stack before it affects the battlefield.`);
+  if (castAnalysis.features.land) {
+    steps.push(`${castCard.name} is a land, so it is played, not cast. It does not use the stack and it cannot be countered as a spell.`);
+  } else {
+    steps.push(`${castCard.name} is the object being cast by ${castControllerText}, so it starts on the stack before it affects the battlefield.`);
+  }
+
+  if (castAnalysis.features.nonbasicLand && bloodMoonEffects.length) {
+    addRule(ruleIds, "layers");
+    title = `${castCard.name} under Blood Moon`;
+    summary = `${bloodMoonEffects.map((card) => card.name).join(", ")} applies immediately to ${castCard.name} as a nonbasic land.`;
+    steps.push(`${bloodMoonEffects.map((card) => describeBoardCard(card, card.side)).join(", ")} applies to nonbasic lands as a continuous effect.`);
+    steps.push(`As ${castCard.name} enters the battlefield, it is a nonbasic land, so it becomes a Mountain.`);
+    steps.push(`${castCard.name} keeps being nonbasic, but it has the Mountain subtype and "{T}: Add {R}."`);
+    steps.push(`${castCard.name} loses its printed rules text and other land types while Blood Moon's effect applies, unless another effect adds something back.`);
+    steps.push("No player can respond to Blood Moon changing the land after it enters; the effect is continuous and does not use the stack.");
+  }
 
   if (instantSorceryCastTriggers.length && includesAny(castAnalysis.text, ["instant", "sorcery"])) {
     addRule(ruleIds, "triggered");
@@ -1008,6 +1073,8 @@ function buildCastInteractionEngine() {
     steps.push("After any surviving copy resolves, apply its effects, then check state-based actions before any player gets priority again.");
   } else if (originalCounteredByResponse) {
     steps.push(`Because ${castCard.name} was countered by ${responseCard.name}, the original spell will not resolve.`);
+  } else if (castAnalysis.features.land) {
+    steps.push(`After ${castCard.name} is played, the game continues with ${castCard.name} affected by any applicable continuous effects.`);
   } else if (castAnalysis.features.damage || castAnalysis.features.destroy || castAnalysis.features.exile) {
     addRule(ruleIds, "sba");
     steps.push(`After ${castCard.name} resolves, apply its damage, destroy, or exile instructions as much as possible.`);
@@ -1048,11 +1115,28 @@ function analyzeLiveBoard() {
   }
 
   if (!liveBoard.cast) {
-    const boardOnly = buildInteractionEngine([...liveBoard.mine, ...liveBoard.opponent]);
-    $("#questionTitle").textContent = "Choose a card to cast";
+    const boardOnly = buildStaticBoardEngine();
+    const related = boardOnly.ruleIds.map((id) => rules.find((rule) => rule.id === id)).filter(Boolean);
+    $("#questionTitle").textContent = boardOnly.engine.facts.includes("Clear ruling") ? "Current board ruling" : "Choose a card to cast";
     $("#questionAnswer").innerHTML = `
       ${buildBoardStateSummary()}
-      <p>The board is loaded. Set a cast card to see how that spell or permanent interacts with the current battlefield.</p>
+      <div class="engine-summary active">
+        <h3>${escapeHtml(boardOnly.engine.title)}</h3>
+        <p>${escapeHtml(boardOnly.engine.summary)}</p>
+        <div class="engine-facts">${boardOnly.engine.facts.map((fact) => `<span class="engine-fact">${escapeHtml(fact)}</span>`).join("")}</div>
+      </div>
+      <ol class="steps">${boardOnly.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>
+      ${related
+        .map(
+          (rule) => `
+            <div class="mini-rule">
+              <strong>${rule.refs}</strong>
+              <p>${rule.summary}</p>
+            </div>
+          `
+        )
+        .join("")}
+      <p>Set a cast or played card if you want to test a new object entering this board state.</p>
     `;
     renderFocus(boardOnly.ruleIds);
     return;
@@ -1116,6 +1200,9 @@ function includesAny(text, words) {
 
 function classifyCard(card) {
   const text = `${card.name || ""} ${card.typeLine || ""} ${card.text || ""} ${(card.keywords || []).join(" ")}`.toLowerCase();
+  const typeText = `${card.typeLine || ""}`.toLowerCase();
+  const isLand = typeText.includes("land");
+  const isBasicLand = typeText.includes("basic land");
   const isPermanent = includesAny(text, ["creature", "artifact", "enchantment", "planeswalker", "battle", "land"]);
   const hasEtbTrigger = /(when|whenever) .* enters/.test(text) || text.includes("when this creature enters");
   const grantsWard = text.includes("has ward") || text.includes("have ward") || text.includes("gain ward");
@@ -1156,6 +1243,9 @@ function classifyCard(card) {
       includesAny(text, ["are mountains", "are swamps", "loses all abilities", "base power and toughness"]) ||
       (text.includes("becomes") && !text.includes("becomes the target")),
     nonbasicLandRule: text.includes("nonbasic lands") || text.includes("each land is"),
+    bloodMoonEffect: text.includes("nonbasic lands are mountains"),
+    land: isLand,
+    nonbasicLand: isLand && !isBasicLand,
     spell: includesAny(text, ["instant", "sorcery"]),
     permanent: isPermanent
   };
@@ -1179,6 +1269,8 @@ function classifyCard(card) {
   if (features.deathtouch) facts.push("deathtouch");
   if (features.copy) facts.push("copy effect");
   if (features.typeChanger || features.nonbasicLandRule) facts.push("continuous effect");
+  if (features.bloodMoonEffect) facts.push("Blood Moon effect");
+  if (features.nonbasicLand) facts.push("nonbasic land");
 
   return { ...card, text, features, facts };
 }
