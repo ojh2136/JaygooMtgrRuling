@@ -168,6 +168,376 @@ const scenarios = [
   }
 ];
 
+const communityExamples = [
+  {
+    id: "community-etali-bauble",
+    title: "Etali, Vexing Bauble, Hexing Squelcher",
+    short: "Does Etali's ETB get countered, and what about the free spells?",
+    mine: ["Hexing Squelcher"],
+    opponent: ["Vexing Bauble"],
+    cast: "Etali, Primal Conqueror",
+    response: "",
+    castController: "mine",
+    manaMode: "paid",
+    turnPhase: "main",
+    castTarget: "auto",
+    responseTarget: "cast"
+  },
+  {
+    id: "community-krark-counter",
+    title: "Krark, Bolt, Counterspell",
+    short: "Which resolves first: Krark's trigger or the counterspell?",
+    mine: ["Krark, the Thumbless"],
+    opponent: [],
+    cast: "Lightning Bolt",
+    response: "Counterspell",
+    castController: "mine",
+    manaMode: "paid",
+    turnPhase: "main",
+    castTarget: "auto",
+    responseTarget: "cast"
+  },
+  {
+    id: "community-blood-moon",
+    title: "Blood Moon and a Nonbasic Land",
+    short: "What happens when a nonbasic land is on the opponent's board?",
+    mine: ["Blood Moon"],
+    opponent: ["Command Tower"],
+    cast: "",
+    response: "",
+    castController: "mine",
+    manaMode: "paid",
+    turnPhase: "main",
+    castTarget: "auto",
+    responseTarget: "cast"
+  },
+  {
+    id: "community-twinflame-path",
+    title: "Twinflame, Etali, Path to Exile",
+    short: "Path removes the only Twinflame target before Twinflame resolves.",
+    mine: ["Etali, Primal Conqueror"],
+    opponent: [],
+    cast: "Twinflame",
+    response: "Path to Exile",
+    castController: "mine",
+    manaMode: "paid",
+    turnPhase: "main",
+    castTarget: "mine:0",
+    responseTarget: "mine:0"
+  },
+  {
+    id: "community-eldrazi-confluence",
+    title: "Eldrazi Confluence Blinking Etali",
+    short: "Can the same blink mode target the same Etali three times?",
+    mine: ["Etali, Primal Conqueror"],
+    opponent: [],
+    cast: "Eldrazi Confluence",
+    response: "",
+    castController: "mine",
+    manaMode: "paid",
+    turnPhase: "main",
+    castTarget: "mine:0",
+    responseTarget: "cast"
+  },
+  {
+    id: "community-reanimate-fated-return",
+    title: "Reanimate and Fated Return",
+    short: "Opponent can target the same graveyard card and move it first.",
+    mine: [],
+    opponent: [],
+    cast: "Reanimate",
+    response: "Fated Return",
+    castController: "mine",
+    manaMode: "paid",
+    turnPhase: "main",
+    castTarget: "auto",
+    responseTarget: "other"
+  },
+  {
+    id: "community-sunfrill-sawhorn",
+    title: "Sunfrill Imitator copying Sawhorn Nemesis",
+    short: "Copying Sawhorn does not copy the player chosen for the original Sawhorn.",
+    mine: ["Sunfrill Imitator", "Sawhorn Nemesis"],
+    opponent: [],
+    cast: "",
+    response: "",
+    castController: "mine",
+    manaMode: "paid",
+    turnPhase: "combat",
+    castTarget: "auto",
+    responseTarget: "cast",
+    ruling: {
+      title: "Sunfrill copying Sawhorn",
+      ruleIds: ["copy", "replacement"],
+      facts: ["copy effect", "choices are not copied", "damage replacement"],
+      whatHappens: [
+        "Sunfrill Imitator attacks.",
+        "Its attack trigger can make it become a copy of Sawhorn Nemesis.",
+        "The original Sawhorn's chosen player is not copied.",
+        "Sunfrill did not enter as Sawhorn, so Sunfrill never chose a player for that Sawhorn ability.",
+        "Sunfrill has the damage-doubling text, but it has no chosen player to refer to.",
+        "Damage is not doubled by Sunfrill and then doubled again.",
+        "Only the original Sawhorn Nemesis doubles damage to its own chosen player or permanents that player controls."
+      ],
+      steps: [
+        "Copy effects copy copiable values, not choices made for another permanent unless an effect specifically says to copy those choices.",
+        "Sawhorn Nemesis's chosen player is tied to that specific Sawhorn object.",
+        "Sunfrill Imitator becomes a copy during combat; it did not enter the battlefield as Sawhorn Nemesis.",
+        "Because Sunfrill never made its own Sawhorn choice, its copied damage-doubling ability has no chosen player to apply to.",
+        "The result is not quadruple damage. The original Sawhorn's replacement effect still works for the player chosen for that original Sawhorn."
+      ]
+    }
+  },
+  {
+    id: "community-fiery-grismold",
+    title: "Fiery Confluence and Grismold",
+    short: "Modal spell instructions finish before death triggers go on the stack.",
+    mine: ["Grismold, the Dreadsower"],
+    opponent: [],
+    cast: "Fiery Confluence",
+    response: "",
+    castController: "opponent",
+    manaMode: "paid",
+    turnPhase: "main",
+    castTarget: "auto",
+    responseTarget: "cast",
+    ruling: {
+      title: "Fiery Confluence killing Grismold",
+      ruleIds: ["priority", "triggered", "sba"],
+      facts: ["modal spell", "triggers wait", "state-based actions"],
+      whatHappens: [
+        "Fiery Confluence resolves as one spell.",
+        "Its chosen modes are followed in order.",
+        "No player gets priority between those modes.",
+        "Creature-token death triggers can trigger during the spell, but they do not go on the stack yet.",
+        "Grismold does not get +1/+1 counters in the middle of Fiery Confluence resolving.",
+        "If Fiery Confluence deals enough damage to Grismold during resolution, Grismold dies before those triggers resolve.",
+        "So yes, Fiery Confluence can kill a 3/3 Grismold even if 1/1 creature tokens die during the same spell."
+      ],
+      steps: [
+        "For a Confluence spell, modes are chosen as the spell is cast, then the chosen instructions are performed while the spell resolves.",
+        "If a chosen mode is repeated, those repeated instructions still happen during the same spell resolution.",
+        "Triggered abilities that trigger during that resolution wait until the next time a player would receive priority.",
+        "State-based actions are checked after Fiery Confluence finishes resolving, before those waiting triggers are put on the stack.",
+        "If Grismold has lethal damage at that point, it is put into its owner's graveyard.",
+        "After that, the waiting token-death triggers are put on the stack, but they will not save that Grismold."
+      ]
+    }
+  },
+  {
+    id: "community-living-death-triggers",
+    title: "Living Death trigger order",
+    short: "Leaves and enters triggers wait, then players order their own triggers after the spell finishes.",
+    mine: [],
+    opponent: [],
+    cast: "Living Death",
+    response: "",
+    castController: "mine",
+    manaMode: "paid",
+    turnPhase: "main",
+    castTarget: "auto",
+    responseTarget: "cast",
+    ruling: {
+      title: "Living Death and delayed trigger placement",
+      ruleIds: ["priority", "triggered", "sba"],
+      facts: ["triggers wait", "APNAP order", "single spell resolution"],
+      whatHappens: [
+        "Living Death starts resolving.",
+        "Players exile creature cards from graveyards.",
+        "Players sacrifice creatures.",
+        "Then the exiled creature cards enter the battlefield.",
+        "Any dies, leaves-the-battlefield, or enters-the-battlefield triggers wait during all of this.",
+        "After Living Death fully finishes resolving, state-based actions are checked.",
+        "Then all waiting triggers are put on the stack.",
+        "Each player chooses the order for triggers they control.",
+        "Those triggers are put on the stack in APNAP order, not in the exact chronological order they happened."
+      ],
+      steps: [
+        "No trigger is put on the stack while Living Death is still resolving.",
+        "Triggers can trigger during the sacrifice part and during the enter-the-battlefield part, but they wait.",
+        "After the spell finishes, the game gathers all waiting triggers that need to be put on the stack.",
+        "The active player puts the triggers they control on the stack in any order they choose.",
+        "Then each other player in turn order does the same for triggers they control.",
+        "Because the last triggers put on the stack resolve first, nonactive-player triggers will usually resolve before active-player triggers.",
+        "The game does not force leaves triggers to be stacked before enters triggers merely because they happened earlier."
+      ]
+    }
+  },
+  {
+    id: "community-thoracle-doomsday",
+    title: "Thassa's Oracle and Doomsday",
+    short: "Doomsday can set up Oracle, but the clean win depends on resolving Oracle's trigger with a tiny library.",
+    mine: [],
+    opponent: [],
+    cast: "Thassa's Oracle",
+    response: "Doomsday",
+    castController: "mine",
+    manaMode: "paid",
+    turnPhase: "main",
+    castTarget: "auto",
+    responseTarget: "cast-trigger",
+    ruling: {
+      title: "Thassa's Oracle plus Doomsday",
+      ruleIds: ["priority", "triggered", "sba"],
+      facts: ["Oracle win line", "triggered ability", "library size matters"],
+      whatHappens: [
+        "You cast Thassa's Oracle.",
+        "Thassa's Oracle resolves and enters the battlefield.",
+        "Its enter-the-battlefield trigger goes on the stack.",
+        "Doomsday must resolve before that Oracle trigger resolves if you want it to change your library for the Oracle check.",
+        "Doomsday leaves you with five cards in your library and exiles the rest.",
+        "Then Oracle's trigger resolves.",
+        "You look at the top X cards, where X is your devotion to blue.",
+        "If your devotion to blue is greater than or equal to the number of cards in your library, you win the game.",
+        "So with Doomsday leaving five cards, you need devotion to blue of five or more at Oracle trigger resolution unless you draw or remove more cards first."
+      ],
+      steps: [
+        "Thassa's Oracle does not win when it is cast; it wins, if at all, when its triggered ability resolves.",
+        "Doomsday is normally cast before Oracle or after Oracle's ETB trigger is on the stack, depending on the line.",
+        "The app's board-only combo detector can miss this because Doomsday is a sorcery line, not a permanent sitting on the battlefield.",
+        "If Oracle's trigger resolves while your library has five cards and your devotion to blue is less than five, you do not win from Oracle.",
+        "Many Doomsday piles include ways to draw through the pile or otherwise reduce the library before Oracle's trigger resolves."
+      ]
+    }
+  }
+];
+
+const commanderCombos = [
+  {
+    cards: ["Dramatic Reversal", "Isochron Scepter"],
+    result: "Infinite untaps, storm count, and mana if your nonland mana sources make enough mana.",
+    pattern: "Repeatable untap engine",
+    needs: "Isochron Scepter has Dramatic Reversal imprinted, and your nonland mana sources make at least 3 mana."
+  },
+  {
+    cards: ["Basalt Monolith", "Rings of Brighthearth"],
+    result: "Infinite colorless mana once Rings copies Basalt Monolith's untap ability.",
+    pattern: "Mana rock untap loop",
+    needs: "You can pay the Rings copy cost during the loop."
+  },
+  {
+    cards: ["Exquisite Blood", "Sanguine Bond"],
+    result: "A life-loss or life-gain event starts an infinite drain loop.",
+    pattern: "Life trigger loop",
+    needs: "A player loses life or you gain life to start the loop."
+  },
+  {
+    cards: ["Dualcaster Mage", "Twinflame"],
+    result: "Infinite hasty creature tokens if Twinflame can target a creature and Dualcaster copies it.",
+    pattern: "Copy spell loop",
+    needs: "Twinflame is on the stack targeting a creature you control, then Dualcaster Mage copies it."
+  },
+  {
+    cards: ["Gravecrawler", "Phyrexian Altar"],
+    result: "Infinite casts, death triggers, and sacrifice triggers with another Zombie available.",
+    pattern: "Graveyard recast loop",
+    needs: "You control another Zombie and Gravecrawler can be cast from your graveyard."
+  },
+  {
+    cards: ["Niv-Mizzet, Parun", "Curiosity"],
+    result: "Drawing and damage trigger each other for a near-infinite damage/card-draw loop.",
+    pattern: "Draw-damage loop",
+    needs: "Curiosity is attached to Niv-Mizzet and a draw or damage trigger starts the loop."
+  },
+  {
+    cards: ["Bloodchief Ascension", "Mindcrank"],
+    result: "Infinite mill, lifeloss, and lifegain triggers.",
+    pattern: "Mill-drain loop",
+    needs: "Bloodchief Ascension has three or more quest counters and an opponent loses life or mills."
+  },
+  {
+    cards: ["Walking Ballista", "Heliod, Sun-Crowned"],
+    result: "Infinite damage and lifegain triggers.",
+    pattern: "Counter-damage loop",
+    needs: "Walking Ballista has lifelink from Heliod and enough counters to begin dealing damage."
+  },
+  {
+    cards: ["Kinnan, Bonder Prodigy", "Basalt Monolith"],
+    result: "Infinite colorless mana.",
+    pattern: "Mana rock untap loop",
+    needs: "Kinnan makes Basalt Monolith produce extra mana."
+  },
+  {
+    cards: ["Peregrine Drake", "Deadeye Navigator"],
+    result: "Infinite blinking, ETB/LTB triggers, and mana from lands.",
+    pattern: "Blink mana loop",
+    needs: "Deadeye Navigator is paired with Peregrine Drake and your lands produce enough mana."
+  },
+  {
+    cards: ["Chatterfang, Squirrel General", "Pitiless Plunderer"],
+    result: "Infinite Treasure tokens, death triggers, ETB/LTB triggers, and sacrifice triggers.",
+    pattern: "Token-sacrifice loop",
+    needs: "You can create or sacrifice a creature to start the loop."
+  },
+  {
+    cards: ["The Gitrog Monster", "Dakmor Salvage"],
+    result: "Infinite self-mill and discard/draw triggers.",
+    pattern: "Dredge draw loop",
+    needs: "A discard outlet or cleanup hand-size discard lets Dakmor Salvage keep dredging."
+  },
+  {
+    cards: ["Underworld Breach", "Lion's Eye Diamond", "Brain Freeze"],
+    result: "Near-infinite storm count, self-mill, and mana.",
+    pattern: "Escape storm loop",
+    needs: "Enough cards in graveyard to keep escaping Brain Freeze and Lion's Eye Diamond."
+  },
+  {
+    cards: ["Sensei's Divining Top", "Mystic Forge", "Foundry Inspector"],
+    result: "Infinite card draw, draw triggers, and storm count.",
+    pattern: "Top-of-library artifact loop",
+    needs: "You can cast Sensei's Divining Top from the top of your library for reduced cost."
+  },
+  {
+    cards: ["Felidar Guardian", "Restoration Angel"],
+    result: "Infinite ETB and LTB triggers.",
+    pattern: "Blink pair loop",
+    needs: "Each creature can blink the other and re-enter to repeat the loop."
+  },
+  {
+    cards: ["Aggravated Assault", "Sword of Feast and Famine"],
+    result: "Infinite combat phases.",
+    pattern: "Combat untap loop",
+    needs: "Equipped creature deals combat damage to a player and your lands produce enough mana."
+  },
+  {
+    cards: ["Food Chain", "Squee, the Immortal"],
+    result: "Infinite creature-spell-only colored mana and infinite creature casts.",
+    pattern: "Exile-cast mana loop",
+    needs: "Food Chain can exile Squee, then Squee can be cast from exile."
+  },
+  {
+    cards: ["Ghostly Flicker", "Peregrine Drake", "Archaeomancer"],
+    result: "Infinite blinking, ETB/LTB triggers, land untaps, and mana.",
+    pattern: "Spell recursion blink loop",
+    needs: "Ghostly Flicker can target the Drake and Archaeomancer, and lands make enough mana."
+  },
+  {
+    cards: ["Staff of Domination", "Priest of Titania"],
+    result: "Infinite green mana, untaps, lifegain, and card draw.",
+    pattern: "Mana creature untap loop",
+    needs: "Priest of Titania taps for at least 5 green mana."
+  },
+  {
+    cards: ["Thassa's Oracle", "Demonic Consultation"],
+    result: "Exile your library and win the game.",
+    pattern: "Oracle win line",
+    needs: "Thassa's Oracle trigger is on the stack before resolving Demonic Consultation."
+  },
+  {
+    cards: ["Thassa's Oracle", "Doomsday"],
+    result: "Set up a tiny library and win with Thassa's Oracle if devotion is high enough or the pile draws down further.",
+    pattern: "Oracle win line",
+    needs: "Doomsday must resolve before Thassa's Oracle's triggered ability resolves. With five cards left, your devotion to blue must be at least five unless the pile reduces your library further."
+  }
+];
+
+const SPELLBOOK_API = "https://backend.commanderspellbook.com";
+const SPELLBOOK_CACHE_KEY = "stackwise.spellbookCombos.v1";
+const SPELLBOOK_SYNC_LIMIT = 100;
+const SPELLBOOK_MAX_PAGES = 220;
+let spellbookCombos = [];
+let spellbookSyncing = false;
+
 let selectedCards = [];
 let activeRuleId = "priority";
 let cardSuggestionNames = [];
@@ -184,6 +554,8 @@ let liveBoard = {
   opponent: [],
   cast: null,
   response: null,
+  castTarget: "auto",
+  responseTarget: "cast",
   castController: "mine",
   manaMode: "paid",
   turnPhase: "main"
@@ -263,6 +635,44 @@ function renderScenarios() {
       `
     )
     .join("");
+}
+
+function renderCommunityExamples() {
+  const container = $("#communityExamples");
+  if (!container) return;
+  const filter = $("#librarySearch")?.value.trim().toLowerCase() || "";
+  const examples = communityExamples.filter((example) => `${example.title} ${example.short}`.toLowerCase().includes(filter));
+  container.innerHTML = examples
+    .map(
+      (example) => `
+        <button class="community-example" data-community-example="${example.id}">
+          <strong>${escapeHtml(example.title)}</strong>
+          <span>${escapeHtml(example.short)}</span>
+        </button>
+      `
+    )
+    .join("") || `<div class="empty-state">No matching examples.</div>`;
+}
+
+function renderCommanderCombos() {
+  const container = $("#comboResearch");
+  if (!container) return;
+  const filter = $("#librarySearch")?.value.trim().toLowerCase() || "";
+  const combos = allCommanderCombos()
+    .filter((combo) => `${comboCardText(combo)} ${combo.result} ${combo.pattern} ${combo.needs}`.toLowerCase().includes(filter))
+    .slice(0, 250);
+  container.innerHTML = combos
+    .map(
+      (combo) => `
+        <article class="combo-card">
+          <strong>${escapeHtml(comboCardText(combo))}</strong>
+          <span>${escapeHtml(combo.result)}</span>
+          <span>${escapeHtml(combo.needs)}</span>
+          <em>${escapeHtml(combo.source ? `${combo.source} · ${combo.pattern}` : combo.pattern)}</em>
+        </article>
+      `
+    )
+    .join("") || `<div class="empty-state">No matching combos. Sync Commander Spellbook or try another filter.</div>`;
 }
 
 function renderAnswer(title, steps, ruleIds, engine = null) {
@@ -615,6 +1025,47 @@ function renderLiveBoard() {
   renderLiveZone("opponent");
   renderLiveZone("cast");
   renderLiveZone("response");
+  renderTargetControls();
+}
+
+function boardTargetEntries() {
+  return [
+    ...liveBoard.mine.map((card, index) => ({ key: `mine:${index}`, card, label: `${card.name} (my board)`, side: "my board" })),
+    ...liveBoard.opponent.map((card, index) => ({ key: `opponent:${index}`, card, label: `${card.name} (opponent board)`, side: "opponent board" }))
+  ];
+}
+
+function findBoardTarget(key) {
+  return boardTargetEntries().find((entry) => entry.key === key) || null;
+}
+
+function renderTargetControls() {
+  const entries = boardTargetEntries();
+  const castTarget = $("#castTarget");
+  const responseTarget = $("#responseTarget");
+
+  if (castTarget) {
+    const current = entries.some((entry) => entry.key === liveBoard.castTarget) ? liveBoard.castTarget : "auto";
+    liveBoard.castTarget = current;
+    castTarget.innerHTML = `
+      <option value="auto">Auto / choose during analysis</option>
+      ${entries.map((entry) => `<option value="${escapeHtml(entry.key)}">${escapeHtml(entry.label)}</option>`).join("")}
+    `;
+    castTarget.value = current;
+  }
+
+  if (responseTarget) {
+    const baseValues = ["cast", "cast-trigger", "other"];
+    const current = baseValues.includes(liveBoard.responseTarget) || entries.some((entry) => entry.key === liveBoard.responseTarget) ? liveBoard.responseTarget : "cast";
+    liveBoard.responseTarget = current;
+    responseTarget.innerHTML = `
+      <option value="cast">The cast spell</option>
+      <option value="cast-trigger">A cast trigger or ability</option>
+      ${entries.map((entry) => `<option value="${escapeHtml(entry.key)}">${escapeHtml(entry.label)}</option>`).join("")}
+      <option value="other">Something else</option>
+    `;
+    responseTarget.value = current;
+  }
 }
 
 function hideLiveSuggestions() {
@@ -749,6 +1200,68 @@ function removeLiveCard(zone, index) {
   analyzeLiveBoard();
 }
 
+function resetLiveBoardState() {
+  liveBoard = {
+    mine: [],
+    opponent: [],
+    cast: null,
+    response: null,
+    castTarget: "auto",
+    responseTarget: "cast",
+    castController: "mine",
+    manaMode: "paid",
+    turnPhase: "main"
+  };
+
+  ["myBoardSearch", "opponentBoardSearch", "castSearch", "responseSearch"].forEach((id) => {
+    const input = $(`#${id}`);
+    if (input) input.value = "";
+  });
+}
+
+async function fetchExampleCards(names) {
+  const uniqueNames = [...new Set(names.filter(Boolean))];
+  const cards = await Promise.all(uniqueNames.map((name) => fetchCard(name)));
+  return cards.reduce((lookup, card, index) => {
+    lookup[uniqueNames[index]] = card;
+    lookup[card.name] = card;
+    return lookup;
+  }, {});
+}
+
+async function loadCommunityExample(exampleId) {
+  const example = communityExamples.find((item) => item.id === exampleId);
+  if (!example) return;
+
+  setStatus("Loading example...");
+
+  try {
+    const lookup = await fetchExampleCards([...example.mine, ...example.opponent, example.cast, example.response]);
+    resetLiveBoardState();
+    liveBoard.mine = example.mine.map((name) => lookup[name]).filter(Boolean);
+    liveBoard.opponent = example.opponent.map((name) => lookup[name]).filter(Boolean);
+    liveBoard.cast = example.cast ? lookup[example.cast] : null;
+    liveBoard.response = example.response ? lookup[example.response] : null;
+    liveBoard.castController = example.castController;
+    liveBoard.manaMode = example.manaMode;
+    liveBoard.turnPhase = example.turnPhase;
+    liveBoard.castTarget = example.castTarget;
+    liveBoard.responseTarget = example.responseTarget;
+
+    $("#castController").value = liveBoard.castController;
+    $("#castManaMode").value = liveBoard.manaMode;
+    $("#turnPhase").value = liveBoard.turnPhase;
+    hideLiveSuggestions();
+    renderLiveBoard();
+    analyzeLiveBoard();
+    switchView("judge");
+    if (example.ruling) renderKnownRuling(example.ruling);
+    setStatus("Example loaded");
+  } catch {
+    setStatus("Example cards unavailable");
+  }
+}
+
 function boardNames(cards) {
   return cards.length ? cards.map((card) => card.name).join(", ") : "none";
 }
@@ -770,6 +1283,20 @@ function phaseLabel(value = liveBoard.turnPhase) {
   return "Main phase";
 }
 
+function responseTargetLabel(value = liveBoard.responseTarget) {
+  if (value === "cast-trigger") return "A cast trigger or ability";
+  if (value === "other") return "Something else";
+  const boardTarget = findBoardTarget(value);
+  if (boardTarget) return boardTarget.label;
+  return "The cast spell";
+}
+
+function castTargetLabel(value = liveBoard.castTarget) {
+  if (value === "auto") return "Auto / choose during analysis";
+  const boardTarget = findBoardTarget(value);
+  return boardTarget ? boardTarget.label : "Auto / choose during analysis";
+}
+
 function buildBoardStateSummary() {
   return `
     <div class="board-state-summary">
@@ -777,10 +1304,12 @@ function buildBoardStateSummary() {
         <h3>Cast</h3>
         <p>${escapeHtml(liveBoard.cast ? liveBoard.cast.name : "No cast card selected")}</p>
         <p>${escapeHtml(controllerLabel())} casting, ${escapeHtml(manaModeLabel())}, ${escapeHtml(phaseLabel())}</p>
+        <p>Target: ${escapeHtml(castTargetLabel())}</p>
       </div>
       <div>
         <h3>Opponent Response</h3>
         <p>${escapeHtml(liveBoard.response ? liveBoard.response.name : "none")}</p>
+        <p>${escapeHtml(responseTargetLabel())}</p>
       </div>
       <div>
         <h3>My Board</h3>
@@ -792,6 +1321,232 @@ function buildBoardStateSummary() {
       </div>
     </div>
   `;
+}
+
+function renderRelatedRuleCards(ruleIds) {
+  return ruleIds
+    .map((id) => rules.find((rule) => rule.id === id))
+    .filter(Boolean)
+    .map(
+      (rule) => `
+        <div class="mini-rule">
+          <strong>${rule.refs}</strong>
+          <p>${rule.summary}</p>
+        </div>
+      `
+    )
+    .join("");
+}
+
+function renderKnownRuling(ruling) {
+  if (!ruling) return;
+  const ruleIds = ruling.ruleIds || ["priority"];
+  $("#questionTitle").textContent = ruling.title;
+  $("#questionAnswer").innerHTML = `
+    ${buildBoardStateSummary()}
+    <div class="what-happens">
+      <h3>What happens</h3>
+      ${renderWhatHappens((ruling.whatHappens || []).join ? ruling.whatHappens.join("\n") : ruling.whatHappens)}
+    </div>
+    <div class="engine-summary active">
+      <h3>${escapeHtml(ruling.title)}</h3>
+      <p>${escapeHtml("Known community ruling pattern loaded into the live rules engine.")}</p>
+      <div class="engine-facts">${(ruling.facts || []).map((fact) => `<span class="engine-fact">${escapeHtml(fact)}</span>`).join("")}</div>
+    </div>
+    <ol class="steps">${(ruling.steps || []).map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>
+    ${renderRelatedRuleCards(ruleIds)}
+  `;
+  renderFocus(ruleIds);
+}
+
+function renderWhatHappens(value) {
+  const text = `${value || ""}`.trim();
+  if (!text) return "";
+
+  const lines = text
+    .split(/\n+|(?<=[.!?])\s+(?=[A-Z0-9])/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  return `
+    <div class="what-happens-lines">
+      ${lines.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}
+    </div>
+  `;
+}
+
+function shortCardName(cardOrName) {
+  const name = typeof cardOrName === "string" ? cardOrName : cardOrName?.name || "";
+  return name.split(" // ")[0];
+}
+
+function normalizeCardName(name) {
+  return shortCardName(name)
+    .toLowerCase()
+    .replace(/[^\w\s'-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function comboCardText(combo) {
+  return combo.cards.join(" + ");
+}
+
+function allCommanderCombos() {
+  const seen = new Set();
+  return [...spellbookCombos, ...commanderCombos].filter((combo) => {
+    const key = `${comboCardText(combo)}|${combo.result}`.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function updateSpellbookStatus(text = "") {
+  const status = $("#spellbookStatus");
+  if (!status) return;
+  if (text) {
+    status.textContent = text;
+    return;
+  }
+  status.textContent = spellbookCombos.length
+    ? `Using ${spellbookCombos.length.toLocaleString()} synced Commander Spellbook variants plus starter combos.`
+    : "Using starter combo set.";
+}
+
+function resultTextFromVariant(variant) {
+  return (variant.produces || [])
+    .map((item) => item.feature?.name)
+    .filter(Boolean)
+    .join(", ");
+}
+
+function requirementsTextFromVariant(variant) {
+  const parts = [
+    variant.manaNeeded ? `Mana needed: ${variant.manaNeeded}.` : "",
+    variant.easyPrerequisites || "",
+    variant.notablePrerequisites || "",
+    (variant.requires || [])
+      .map((item) => item.template?.name)
+      .filter(Boolean)
+      .map((name) => `Requires ${name}.`)
+      .join(" ")
+  ].filter(Boolean);
+
+  return parts.join(" ") || "Check Commander Spellbook for exact board state, zones, and repeat steps.";
+}
+
+function mapSpellbookVariant(variant) {
+  const cards = (variant.uses || []).map((use) => use.card?.name).filter(Boolean);
+  if (!cards.length) return null;
+  return {
+    id: `spellbook:${variant.id}`,
+    source: "Commander Spellbook",
+    cards,
+    result: resultTextFromVariant(variant) || "Combo result listed on Commander Spellbook.",
+    pattern: variant.bracketTag ? `Commander Spellbook bracket ${variant.bracketTag}` : "Commander Spellbook combo",
+    needs: requirementsTextFromVariant(variant),
+    steps: variant.description || "",
+    popularity: variant.popularity || 0
+  };
+}
+
+function loadSpellbookCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(SPELLBOOK_CACHE_KEY) || "[]");
+    spellbookCombos = Array.isArray(cached) ? cached : [];
+  } catch {
+    spellbookCombos = [];
+  }
+  updateSpellbookStatus();
+}
+
+function saveSpellbookCache() {
+  try {
+    localStorage.setItem(SPELLBOOK_CACHE_KEY, JSON.stringify(spellbookCombos));
+  } catch {
+    updateSpellbookStatus("Synced combos loaded for this session. Browser storage is full, so they were not cached.");
+  }
+}
+
+async function syncCommanderSpellbook() {
+  if (spellbookSyncing) return;
+  spellbookSyncing = true;
+  $("#syncSpellbook").disabled = true;
+  updateSpellbookStatus("Syncing Commander Spellbook...");
+
+  const synced = [];
+  let nextUrl = `${SPELLBOOK_API}/variants?limit=${SPELLBOOK_SYNC_LIMIT}`;
+  let pages = 0;
+
+  try {
+    while (nextUrl && pages < SPELLBOOK_MAX_PAGES) {
+      const response = await fetch(nextUrl, { headers: { Accept: "application/json" } });
+      if (!response.ok) throw new Error("Commander Spellbook sync failed");
+      const payload = await response.json();
+      (payload.results || []).forEach((variant) => {
+        const combo = mapSpellbookVariant(variant);
+        if (combo) synced.push(combo);
+      });
+      pages += 1;
+      nextUrl = payload.next;
+      updateSpellbookStatus(`Syncing Commander Spellbook... ${synced.length.toLocaleString()} variants loaded`);
+    }
+
+    spellbookCombos = synced;
+    saveSpellbookCache();
+    renderCommanderCombos();
+    analyzeLiveBoard();
+    updateSpellbookStatus(`Synced ${spellbookCombos.length.toLocaleString()} Commander Spellbook variants.`);
+    setStatus("Spellbook synced");
+  } catch (error) {
+    updateSpellbookStatus(`Could not sync Commander Spellbook from this browser. ${error.message || "Starter combos are still available."}`);
+    setStatus("Spellbook sync unavailable");
+  } finally {
+    spellbookSyncing = false;
+    $("#syncSpellbook").disabled = false;
+  }
+}
+
+function clearSpellbookCache() {
+  spellbookCombos = [];
+  localStorage.removeItem(SPELLBOOK_CACHE_KEY);
+  renderCommanderCombos();
+  analyzeLiveBoard();
+  updateSpellbookStatus();
+  setStatus("Spellbook sync cleared");
+}
+
+function detectCommanderCombos(cards) {
+  const boardNames = new Set(cards.map((card) => normalizeCardName(card.name)));
+  return allCommanderCombos().filter((combo) => combo.cards.every((name) => boardNames.has(normalizeCardName(name)))).slice(0, 6);
+}
+
+function commanderComboLines(extraCard = null, extraSide = "") {
+  const groups = [
+    { side: "your board", cards: liveBoard.mine },
+    { side: "opponent's board", cards: liveBoard.opponent }
+  ];
+
+  if (extraCard && extraSide) {
+    const targetGroup = groups.find((group) => group.side === extraSide);
+    if (targetGroup) targetGroup.cards = [...targetGroup.cards, extraCard];
+  }
+
+  return groups.flatMap((group) =>
+    detectCommanderCombos(group.cards).map(
+      (combo) =>
+        `${group.side === "your board" ? "Your board" : "Opponent's board"} has ${comboCardText(combo)}. This is a Commander combo pattern: ${combo.result} Check the setup: ${combo.needs}`
+    )
+  );
+}
+
+function withCommanderComboLines(whatHappens, extraCard = null, extraSide = "") {
+  const lines = commanderComboLines(extraCard, extraSide);
+  if (!lines.length) return whatHappens;
+  const base = `${whatHappens || ""}`.trim();
+  const genericBase = base.startsWith("The engine found the rules concepts") || base.endsWith("is checked against the current board state.");
+  return [genericBase ? "" : base, ...lines].filter(Boolean).join("\n");
 }
 
 function targetKindFor(card) {
@@ -853,6 +1608,7 @@ function buildStaticBoardEngine() {
       title: "Blood Moon and nonbasic lands",
       steps,
       ruleIds,
+      whatHappens: `${bloodMoon.name} makes the opponent's nonbasic land a Mountain immediately. It keeps being nonbasic, but it loses its printed text and taps for red while Blood Moon applies.`,
       engine: {
         title: "Continuous effect and layers",
         summary: `${bloodMoon.name} changes each nonbasic land into a Mountain while its effect applies.`,
@@ -888,6 +1644,8 @@ function buildCastInteractionEngine() {
   const castAnalysis = classifyCard(castCard);
   const analyzedBoard = boardCards.map((card) => classifyCard(card));
   const responseAnalysis = responseCard ? classifyCard(responseCard) : null;
+  const selectedCastTarget = findBoardTarget(liveBoard.castTarget);
+  const selectedResponseTarget = findBoardTarget(liveBoard.responseTarget);
   const cardsForFallback = [castCard, ...liveBoard.mine, ...liveBoard.opponent];
   const fallback = buildInteractionEngine(cardsForFallback);
   const ruleIds = ["priority"];
@@ -895,6 +1653,7 @@ function buildCastInteractionEngine() {
   const facts = [...new Set([...(castAnalysis.facts || []), ...(responseAnalysis?.facts || []), ...analyzedBoard.flatMap((card) => card.facts || [])])];
   let title = `${castCard.name} vs live board`;
   let summary = `${castCard.name} is being evaluated against the current permanents on both boards.`;
+  let whatHappens = `${castCard.name} is checked against the current board state.`;
   let confidence = "Clear ruling";
   const noManaCounterCards = analyzedBoard.filter((card) => card.features.noManaCounterTrigger);
   const uncounterableCards = analyzedBoard.filter((card) => card.features.makesYourSpellsUncounterable && card.side === "my board");
@@ -906,8 +1665,12 @@ function buildCastInteractionEngine() {
   const castControllerPossessive = liveBoard.castController === "opponent" ? "opponent's" : "your";
   const castWasFree = liveBoard.manaMode === "free";
   const castManaUnknown = liveBoard.manaMode === "unknown";
+  const responseTargetsCast = liveBoard.responseTarget === "cast";
+  const responseTargetsTrigger = liveBoard.responseTarget === "cast-trigger";
+  const responseTargetsPermanent = Boolean(selectedResponseTarget);
+  let castTargetRemovedByResponse = false;
 
-  if (!boardCards.length) {
+  if (!boardCards.length && !responseCard) {
     addRule(ruleIds, "priority");
     steps.push(`${castCard.name} is cast and put on the stack.`);
     if (castAnalysis.features.targeter) {
@@ -942,6 +1705,7 @@ function buildCastInteractionEngine() {
     addRule(ruleIds, "layers");
     title = `${castCard.name} under Blood Moon`;
     summary = `${bloodMoonEffects.map((card) => card.name).join(", ")} applies immediately to ${castCard.name} as a nonbasic land.`;
+    whatHappens = `${castCard.name} enters under Blood Moon as a Mountain. It is still nonbasic, but it loses its printed text and taps for red while Blood Moon applies.`;
     steps.push(`${bloodMoonEffects.map((card) => describeBoardCard(card, card.side)).join(", ")} applies to nonbasic lands as a continuous effect.`);
     steps.push(`As ${castCard.name} enters the battlefield, it is a nonbasic land, so it becomes a Mountain.`);
     steps.push(`${castCard.name} keeps being nonbasic, but it has the Mountain subtype and "{T}: Add {R}."`);
@@ -949,23 +1713,156 @@ function buildCastInteractionEngine() {
     steps.push("No player can respond to Blood Moon changing the land after it enters; the effect is continuous and does not use the stack.");
   }
 
+  if (castAnalysis.features.repeatableModalSpell && castAnalysis.features.blinkNonlandPermanent && selectedCastTarget) {
+    const targetName = shortCardName(selectedCastTarget.card);
+    addRule(ruleIds, "targets");
+    addRule(ruleIds, "triggered");
+    title = `${castCard.name} repeated blink mode`;
+    summary = `${castCard.name} can choose the same blink mode more than once, but blinking the same target multiple times does not keep finding the returned object.`;
+    whatHappens = [
+      `You cast ${castCard.name}.`,
+      "You choose the second mode three times.",
+      `You choose ${targetName} as the target for each instance.`,
+      `First blink resolves: ${targetName} is exiled and returned tapped.`,
+      `${targetName} enters, so its ETB triggers once.`,
+      `The remaining two blink instructions do not affect the new ${targetName}.`,
+      `You do not get three ${targetName} ETB triggers.`
+    ].join("\n");
+    steps.push(`${castCard.name} lets you choose the same mode more than once, so choosing the second mode three times is legal.`);
+    steps.push(`You can choose ${selectedCastTarget.card.name} as the target for each repeated instance of that mode while casting ${castCard.name}.`);
+    steps.push(`When the first blink instruction resolves, ${selectedCastTarget.card.name} is exiled and returned to the battlefield tapped under its owner's control.`);
+    steps.push(`The returned ${selectedCastTarget.card.name} is a new game object. It is not the same object that the remaining two repeated target instructions were pointing at.`);
+    if (classifyCard(selectedCastTarget.card).features.etbTrigger) {
+      steps.push(`Because ${selectedCastTarget.card.name} entered the battlefield, its enter-the-battlefield ability triggers once from that return.`);
+    }
+    steps.push("The remaining repeated blink instructions do not exile and return the new object, so they do not create additional ETB triggers.");
+  }
+
+  if (castAnalysis.features.thassasOracle && responseAnalysis?.features.doomsday) {
+    addRule(ruleIds, "priority");
+    addRule(ruleIds, "triggered");
+    title = "Thassa's Oracle plus Doomsday";
+    summary = "Doomsday can set up a Thassa's Oracle win, but Oracle checks devotion and library size only when its ETB trigger resolves.";
+    whatHappens = [
+      "You cast Thassa's Oracle.",
+      "Thassa's Oracle resolves and enters the battlefield.",
+      "Its enter-the-battlefield trigger goes on the stack.",
+      "Doomsday must resolve before that Oracle trigger resolves if you want it to change your library for the Oracle check.",
+      "Doomsday leaves you with five cards in your library and exiles the rest.",
+      "Then Oracle's trigger resolves.",
+      "You look at the top X cards, where X is your devotion to blue.",
+      "If your devotion to blue is greater than or equal to the number of cards in your library, you win the game.",
+      "So with Doomsday leaving five cards, you need devotion to blue of five or more at Oracle trigger resolution unless you draw or remove more cards first."
+    ].join("\n");
+    steps.push("Thassa's Oracle's win check is part of a triggered ability, not the spell resolving.");
+    steps.push("Doomsday is a sorcery, so by default it cannot be cast after Oracle's trigger is on the stack unless another effect lets you cast it at instant speed.");
+    steps.push("The common Doomsday plan is to cast Doomsday first, build a pile, then cast Oracle and use the pile to make the library small enough before Oracle's trigger resolves.");
+    steps.push("If your library has five cards when Oracle's trigger resolves, Oracle wins only if your devotion to blue is at least five.");
+  }
+
+  if (castAnalysis.features.doomsday && responseAnalysis?.features.thassasOracle) {
+    addRule(ruleIds, "priority");
+    addRule(ruleIds, "triggered");
+    title = "Doomsday into Thassa's Oracle";
+    summary = "Doomsday makes the library small, then Thassa's Oracle can win when its ETB trigger resolves if devotion is high enough.";
+    whatHappens = [
+      "Doomsday resolves first and leaves you with five chosen cards in your library.",
+      "Then you cast Thassa's Oracle later from your hand, library, or pile line if you can.",
+      "Oracle enters and its ETB trigger goes on the stack.",
+      "When that trigger resolves, it compares your devotion to blue to the number of cards in your library.",
+      "If devotion is greater than or equal to your library size, you win.",
+      "If your library still has five cards, devotion to blue must be five or more unless another effect drew or removed cards from the library first."
+    ].join("\n");
+    steps.push("Doomsday by itself does not win the game; it sets up a five-card library.");
+    steps.push("Thassa's Oracle wins only if its triggered ability resolves with enough devotion relative to your library size.");
+  }
+
+  if (castAnalysis.features.returnsCreatureFromAnyGraveyard && responseAnalysis?.features.returnsCreatureFromYourGraveyard) {
+    addRule(ruleIds, "priority");
+    addRule(ruleIds, "targets");
+    title = `${castCard.name} and ${responseCard.name}`;
+    summary = `${responseCard.name} can respond, but it cannot target a creature card in ${castControllerPossessive} graveyard because it only targets a creature card from its controller's graveyard.`;
+    whatHappens = `${responseCard.name} cannot take the creature card you targeted with ${castCard.name}. If the opponent has their own legal creature card in their graveyard, ${responseCard.name} may return that first. Then ${castCard.name} resolves and returns your targeted creature card if it is still in the graveyard.`;
+    steps.push(`${castCard.name} targets a creature card in a graveyard. In your example, that target is a creature card in your graveyard.`);
+    steps.push(`${responseCard.name} can be cast in response because it is an instant, so it goes on the stack above ${castCard.name}.`);
+    steps.push(`${responseCard.name} says "from your graveyard," meaning from the graveyard of ${responseCard.name}'s controller. Your opponent cannot choose the creature card in your graveyard as its target.`);
+    steps.push(`If the opponent has a legal creature card in their own graveyard, ${responseCard.name} can return that card first. That does not change ${castCard.name}'s target.`);
+    steps.push(`When ${castCard.name} resolves, it checks whether its target creature card is still in the graveyard. If it is still there, you put it onto the battlefield under your control and lose life equal to its mana value.`);
+    steps.push(`If some other legal response exiles or moves the creature card you targeted with ${castCard.name}, then ${castCard.name}'s only target is illegal and ${castCard.name} does not resolve.`);
+  }
+
+  if (castAnalysis.features.returnsCreatureFromAnyGraveyard && responseAnalysis?.features.returnsCreatureFromAnyGraveyard) {
+    addRule(ruleIds, "priority");
+    addRule(ruleIds, "targets");
+    title = `${castCard.name} and ${responseCard.name}`;
+    summary = `${responseCard.name} can legally target the same creature card in a graveyard. If it resolves first and moves that card, ${castCard.name}'s target is gone.`;
+    whatHappens = `If your opponent casts ${responseCard.name} targeting the same creature card in your graveyard, ${responseCard.name} resolves first and returns that card under their control. Then ${castCard.name} tries to resolve, but its only target is no longer in the graveyard, so ${castCard.name} does not resolve and you do not lose life from it.`;
+    steps.push(`${castCard.name} targets a creature card in a graveyard. In your example, that target is a creature card in your graveyard.`);
+    steps.push(`${responseCard.name} is an instant, so your opponent can cast it in response while ${castCard.name} is still on the stack.`);
+    steps.push(`${responseCard.name} also targets a creature card from a graveyard, so it can legally choose the same creature card in your graveyard.`);
+    steps.push(`${responseCard.name} is on top of the stack, so it resolves first if everyone passes.`);
+    steps.push(`When ${responseCard.name} resolves, that creature card leaves the graveyard and enters the battlefield under your opponent's control. It gains indestructible from ${responseCard.name}.`);
+    steps.push(`Then ${castCard.name} tries to resolve. Its target is no longer in the graveyard, so the target is illegal.`);
+    steps.push(`Because ${castCard.name} has no legal target left, it does not resolve. You do not return the creature and you do not lose life from ${castCard.name}.`);
+  }
+
   if (instantSorceryCastTriggers.length && includesAny(castAnalysis.text, ["instant", "sorcery"])) {
     addRule(ruleIds, "triggered");
     steps.push(`${instantSorceryCastTriggers.map((card) => card.name).join(", ")} triggers when you finish casting ${castCard.name}. That trigger is put on the stack above ${castCard.name} before any player can respond.`);
   }
 
-  if (responseAnalysis?.features.counterspell) {
+  if (responseAnalysis?.features.counterspell && responseTargetsCast) {
     addRule(ruleIds, "targets");
     originalCounteredByResponse = true;
     steps.push(`Opponent response: ${responseCard.name} is cast after ${castCard.name} and any cast triggers are already on the stack. If it targets ${castCard.name}, it goes on top of the stack and resolves before those lower objects.`);
     steps.push(`If ${responseCard.name} resolves first, it counters ${castCard.name}; ${castCard.name} leaves the stack and will not resolve.`);
+    whatHappens = `${responseCard.name} counters ${castCard.name}. The original spell leaves the stack and does not resolve.`;
   }
 
-  if (krarkTriggers.length && responseAnalysis?.features.counterspell && includesAny(castAnalysis.text, ["instant", "sorcery"])) {
+  if (responseAnalysis?.features.counterspell && responseTargetsTrigger) {
+    addRule(ruleIds, "targets");
+    if (responseAnalysis.features.countersAbility || responseAnalysis.features.countersSpellOrAbility) {
+      whatHappens = `${responseCard.name} counters the triggered ability. The trigger does not resolve, but ${castCard.name} remains on the stack unless something else counters it.`;
+      steps.push(`Opponent response: ${responseCard.name} is targeting a triggered ability. Because it can counter abilities, it can target the cast trigger if that trigger is on the stack.`);
+      if (krarkTriggers.length) {
+        steps.push(`If ${responseCard.name} counters ${krarkTriggers.map((card) => card.name).join(", ")}'s trigger, no coin is flipped and that trigger does not copy or return ${castCard.name}.`);
+      }
+      steps.push(`${castCard.name} remains on the stack unless some other effect counters or moves it.`);
+    } else {
+      confidence = "Invalid target";
+      whatHappens = `${responseCard.name} cannot legally target that triggered ability with its current wording. Choose the cast spell as the target, or use a card that can counter abilities.`;
+      steps.push(`Opponent response target issue: ${responseCard.name} appears to counter spells, not triggered abilities. It cannot legally target a cast trigger or ability with the current Oracle text.`);
+      steps.push(`If the opponent wants to stop the trigger, they need a card that can counter a triggered ability, such as an effect worded "counter target activated or triggered ability."`);
+    }
+  }
+
+  if (responseAnalysis?.features.counterspell && liveBoard.responseTarget === "other") {
+    addRule(ruleIds, "targets");
+    confidence = "Needs target details";
+    whatHappens = `${responseCard.name} is aimed at something outside the modeled stack interaction, so it does not affect ${castCard.name} or its trigger unless the target is changed.`;
+    steps.push(`Opponent response: ${responseCard.name} is set to target something else. This means it does not counter ${castCard.name} or the cast trigger unless the target choice is changed.`);
+    steps.push("To produce a precise ruling, set the response target to the cast spell or the cast trigger, or add the actual object being targeted to the board state.");
+  }
+
+  if (responseCard && responseTargetsPermanent) {
+    addRule(ruleIds, "targets");
+    steps.push(`Opponent response: ${responseCard.name} targets ${selectedResponseTarget.label}. It is on top of the stack and resolves before ${castCard.name}.`);
+    if (responseAnalysis?.features.exile || responseAnalysis?.features.destroy) {
+      steps.push(`If ${responseCard.name} resolves, ${selectedResponseTarget.card.name} leaves the battlefield before ${castCard.name} resolves.`);
+      if (selectedCastTarget && selectedCastTarget.key === selectedResponseTarget.key && castAnalysis.features.targeter) {
+        castTargetRemovedByResponse = true;
+        whatHappens = `${responseCard.name} removes ${selectedResponseTarget.card.name} before ${castCard.name} resolves. Since ${castCard.name}'s only target is gone, ${castCard.name} does not resolve.`;
+        steps.push(`${castCard.name}'s chosen target was ${selectedCastTarget.card.name}, so that target is now illegal when ${castCard.name} tries to resolve.`);
+      }
+    }
+  }
+
+  if (krarkTriggers.length && responseAnalysis?.features.counterspell && responseTargetsCast && includesAny(castAnalysis.text, ["instant", "sorcery"])) {
     addRule(ruleIds, "triggered");
     addRule(ruleIds, "copy");
     title = `${castCard.name}, Krark trigger, and counter response`;
     summary = `The opponent's counterspell can resolve before the Krark trigger, but the Krark trigger still resolves afterward.`;
+    whatHappens = `${responseCard.name} counters ${castCard.name} first. Krark's trigger still resolves afterward: losing the flip returns nothing, while winning creates a copy that can still resolve.`;
     steps.push(`Then ${krarkTriggers.map((card) => card.name).join(", ")}'s trigger resolves even though ${castCard.name} is no longer on the stack.`);
     steps.push(`If you lose the coin flip, ${castCard.name} cannot be returned to your hand because it is no longer on the stack. It stays wherever the counterspell put it, usually the graveyard.`);
     steps.push(`If you win the coin flip, Krark still creates a copy of ${castCard.name} even though the original was countered. The copy is created on the stack and can resolve if no one counters it.`);
@@ -1009,6 +1906,7 @@ function buildCastInteractionEngine() {
     addRule(ruleIds, "priority");
     title = `${castCard.name} ETB vs live board`;
     summary = `${castCard.name}'s ETB ability is checked separately from the spells it may let you cast without paying mana.`;
+    whatHappens = `${castCard.name}'s ETB ability is not a spell, so spell-countering effects do not counter that ability. Any free spells cast from the ETB are checked separately.`;
     steps.push(`When ${castCard.name}'s ETB ability resolves, it can let you cast exiled nonland cards without paying their mana costs.`);
     if (noManaCounterCards.length) {
       steps.push(`Each spell you cast this way has no mana spent to cast it, so ${noManaCounterCards.map((card) => card.name).join(", ")} will trigger for each of those spells.`);
@@ -1026,7 +1924,9 @@ function buildCastInteractionEngine() {
     addRule(ruleIds, "targets");
     const targetKind = targetKindFor(castCard);
     const possibleTargets = boardCards.filter((card) => permanentMatchesTarget(card, targetKind));
-    if (possibleTargets.length) {
+    if (selectedCastTarget) {
+      steps.push(`${castCard.name} is set to target ${selectedCastTarget.label}.`);
+    } else if (possibleTargets.length) {
       steps.push(`${castCard.name} asks for ${targetKind}. On this board, likely permanent targets include ${possibleTargets.map((card) => describeBoardCard(card, card.side)).join(", ")}.`);
     } else {
       steps.push(`${castCard.name} asks for ${targetKind}, and no current battlefield permanent clearly matches that target requirement.`);
@@ -1067,7 +1967,14 @@ function buildCastInteractionEngine() {
     }
   });
 
-  if (originalCounteredByResponse && krarkTriggers.length) {
+  if (castTargetRemovedByResponse) {
+    addRule(ruleIds, "targets");
+    steps.push(`Because all of ${castCard.name}'s targets are illegal when it tries to resolve, ${castCard.name} does not resolve and none of its effects happen.`);
+    if (castAnalysis.features.tokenCopyOfCreature) {
+      steps.push(`${castCard.name} creates no token copy, so no copied creature enters and no enter-the-battlefield ability from that token triggers.`);
+      whatHappens = `${responseCard.name} removes ${selectedResponseTarget.card.name} before ${castCard.name} resolves. ${castCard.name} has no legal target, so it creates no token and no ETB trigger happens from a token copy.`;
+    }
+  } else if (originalCounteredByResponse && krarkTriggers.length) {
     addRule(ruleIds, "sba");
     steps.push(`The original ${castCard.name} will not resolve after being countered. Only a copy created by the Krark trigger can resolve from this sequence.`);
     steps.push("After any surviving copy resolves, apply its effects, then check state-based actions before any player gets priority again.");
@@ -1095,6 +2002,7 @@ function buildCastInteractionEngine() {
       title: castCard.name,
       steps: [...new Set(steps)],
       ruleIds,
+      whatHappens,
       engine: {
         title,
         summary,
@@ -1120,6 +2028,10 @@ function analyzeLiveBoard() {
     $("#questionTitle").textContent = boardOnly.engine.facts.includes("Clear ruling") ? "Current board ruling" : "Choose a card to cast";
     $("#questionAnswer").innerHTML = `
       ${buildBoardStateSummary()}
+      <div class="what-happens">
+        <h3>What happens</h3>
+        ${renderWhatHappens(withCommanderComboLines(boardOnly.whatHappens || boardOnly.engine.summary))}
+      </div>
       <div class="engine-summary active">
         <h3>${escapeHtml(boardOnly.engine.title)}</h3>
         <p>${escapeHtml(boardOnly.engine.summary)}</p>
@@ -1145,9 +2057,14 @@ function analyzeLiveBoard() {
   const castEngine = buildCastInteractionEngine();
   const result = castEngine.result;
   const related = result.ruleIds.map((id) => rules.find((rule) => rule.id === id)).filter(Boolean);
+  const castComboSide = liveBoard.castController === "opponent" ? "opponent's board" : "your board";
   $("#questionTitle").textContent = liveBoard.cast ? `Casting ${liveBoard.cast.name}` : "Current board";
   $("#questionAnswer").innerHTML = `
     ${buildBoardStateSummary()}
+    <div class="what-happens">
+      <h3>What happens</h3>
+      ${renderWhatHappens(withCommanderComboLines(result.whatHappens || result.engine.summary, liveBoard.cast, castComboSide))}
+    </div>
     <div class="engine-summary active">
       <h3>${escapeHtml(result.engine.title)}</h3>
       <p>${escapeHtml(result.engine.summary)}</p>
@@ -1211,9 +2128,19 @@ function classifyCard(card) {
   const castsWithoutPaying = text.includes("cast") && text.includes("without paying") && text.includes("mana cost");
   const instantSorceryCastTrigger = text.includes("whenever you cast an instant or sorcery spell");
   const krarkStyleTrigger = instantSorceryCastTrigger && text.includes("flip a coin") && text.includes("return that spell") && text.includes("copy that spell");
+  const tokenCopyOfCreature = text.includes("token") && text.includes("copy of target creature");
+  const repeatableModalSpell = text.includes("you may choose the same mode more than once");
+  const blinkNonlandPermanent = text.includes("exile target nonland permanent") && text.includes("return it to the battlefield");
+  const returnsCreatureFromAnyGraveyard = text.includes("target creature card from a graveyard");
+  const returnsCreatureFromYourGraveyard = text.includes("target creature card from your graveyard");
+  const thassasOracle = text.includes("thassa's oracle") && text.includes("greater than or equal to the number of cards in your library");
+  const doomsday = text.includes("doomsday") && text.includes("search your library and graveyard for five cards");
   const features = {
     targeter: /\btarget\b/.test(text),
     counterspell: text.includes("counter target") || text.includes("counter up to one target"),
+    countersOnlySpell: text.includes("counter target spell") && !text.includes("activated or triggered ability"),
+    countersAbility: text.includes("counter target activated or triggered ability") || text.includes("counter target triggered ability") || text.includes("counter target ability"),
+    countersSpellOrAbility: text.includes("counter target spell or ability"),
     ward: text.includes("ward"),
     wardSelf: text.includes("ward") && !grantsWard,
     wardGranter: grantsWard,
@@ -1228,6 +2155,13 @@ function classifyCard(card) {
     castsWithoutPaying,
     instantSorceryCastTrigger,
     krarkStyleTrigger,
+    tokenCopyOfCreature,
+    repeatableModalSpell,
+    blinkNonlandPermanent,
+    returnsCreatureFromAnyGraveyard,
+    returnsCreatureFromYourGraveyard,
+    thassasOracle,
+    doomsday,
     replacement: includesAny(text, [" instead", "as this enters", "as it enters", "enters the battlefield with", "skip "]),
     graveyardReplacement: text.includes("would be put into a graveyard") || (text.includes("graveyard") && text.includes("exile") && text.includes("instead")),
     damage: /deals? \d+ damage/.test(text) || text.includes("deals damage"),
@@ -1253,6 +2187,7 @@ function classifyCard(card) {
   const facts = [];
   if (features.targeter) facts.push("targets");
   if (features.counterspell) facts.push("counters spells");
+  if (features.countersAbility) facts.push("counters abilities");
   if (features.noManaCounterTrigger) facts.push("counters free spells");
   if (features.makesYourSpellsUncounterable) facts.push("your spells can't be countered");
   if (features.castsWithoutPaying) facts.push("casts spells for free");
@@ -1268,6 +2203,13 @@ function classifyCard(card) {
   if (features.trample) facts.push("trample");
   if (features.deathtouch) facts.push("deathtouch");
   if (features.copy) facts.push("copy effect");
+  if (features.tokenCopyOfCreature) facts.push("token copy spell");
+  if (features.repeatableModalSpell) facts.push("repeatable modes");
+  if (features.blinkNonlandPermanent) facts.push("blink mode");
+  if (features.returnsCreatureFromAnyGraveyard) facts.push("graveyard target");
+  if (features.returnsCreatureFromYourGraveyard) facts.push("own graveyard only");
+  if (features.thassasOracle) facts.push("Oracle win check");
+  if (features.doomsday) facts.push("five-card library setup");
   if (features.typeChanger || features.nonbasicLandRule) facts.push("continuous effect");
   if (features.bloodMoonEffect) facts.push("Blood Moon effect");
   if (features.nonbasicLand) facts.push("nonbasic land");
@@ -1464,6 +2406,18 @@ function analyzeQuestion() {
   analyzeLiveBoard();
 }
 
+function switchLibraryTab(tabName) {
+  $$("[data-library-tab]").forEach((button) => {
+    const isActive = button.dataset.libraryTab === tabName;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-selected", String(isActive));
+  });
+
+  $$("[data-library-pane]").forEach((pane) => {
+    pane.classList.toggle("active", pane.dataset.libraryPane === tabName);
+  });
+}
+
 function bindEvents() {
   $$(".nav-item").forEach((button) => button.addEventListener("click", () => switchView(button.dataset.view)));
 
@@ -1606,15 +2560,31 @@ function bindEvents() {
     addLiveCard("response", $("#responseSearch").value);
   });
 
+  $("#communityExamples").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-community-example]");
+    if (!button) return;
+    loadCommunityExample(button.dataset.communityExample);
+  });
+
+  $$("[data-library-tab]").forEach((button) => {
+    button.addEventListener("click", () => switchLibraryTab(button.dataset.libraryTab));
+  });
+
+  $("#librarySearch").addEventListener("input", () => {
+    renderCommunityExamples();
+    renderCommanderCombos();
+  });
+
+  $("#syncSpellbook").addEventListener("click", syncCommanderSpellbook);
+  $("#clearSpellbookCache").addEventListener("click", clearSpellbookCache);
+
   $("#clearLiveBoard").addEventListener("click", () => {
-    liveBoard = { mine: [], opponent: [], cast: null, response: null, castController: "mine", manaMode: "paid", turnPhase: "main" };
-    ["myBoardSearch", "opponentBoardSearch", "castSearch", "responseSearch"].forEach((id) => {
-      const input = $(`#${id}`);
-      if (input) input.value = "";
-    });
+    resetLiveBoardState();
     $("#castController").value = liveBoard.castController;
     $("#castManaMode").value = liveBoard.manaMode;
     $("#turnPhase").value = liveBoard.turnPhase;
+    $("#castTarget").value = liveBoard.castTarget;
+    $("#responseTarget").value = liveBoard.responseTarget;
     hideLiveSuggestions();
     renderLiveBoard();
     analyzeLiveBoard();
@@ -1633,6 +2603,16 @@ function bindEvents() {
 
   $("#turnPhase").addEventListener("change", (event) => {
     liveBoard.turnPhase = event.target.value;
+    analyzeLiveBoard();
+  });
+
+  $("#responseTarget").addEventListener("change", (event) => {
+    liveBoard.responseTarget = event.target.value;
+    analyzeLiveBoard();
+  });
+
+  $("#castTarget").addEventListener("change", (event) => {
+    liveBoard.castTarget = event.target.value;
     analyzeLiveBoard();
   });
 
@@ -1680,6 +2660,9 @@ function bindEvents() {
 }
 
 renderScenarios();
+renderCommunityExamples();
+loadSpellbookCache();
+renderCommanderCombos();
 renderSelectedCards();
 renderRulesList();
 renderAnswer(scenarios[0].title, scenarios[0].steps, scenarios[0].ruleIds);

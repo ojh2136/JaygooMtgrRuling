@@ -30,6 +30,10 @@
             <span aria-hidden="true">?</span>
             Board Question
           </button>
+          <button class="nav-item" data-view="library">
+            <span aria-hidden="true">LB</span>
+            Reference Library
+          </button>
         </nav>
 
         <div class="sidebar-block">
@@ -178,6 +182,12 @@
                   <input id="castSearch" type="search" placeholder="Search the card being cast" autocomplete="off" aria-expanded="false" aria-controls="castSuggestions" />
                   <div id="castSuggestions" class="suggestions" role="listbox" aria-label="Cast card suggestions"></div>
                 </div>
+                <label class="target-control">
+                  <span>Cast target</span>
+                  <select id="castTarget">
+                    <option value="auto">Auto / choose during analysis</option>
+                  </select>
+                </label>
                 <div class="response-panel">
                   <div>
                     <p class="eyebrow">Opponent Response</p>
@@ -187,6 +197,14 @@
                     <input id="responseSearch" type="search" placeholder="Optional: Counterspell, Swan Song, Flusterstorm" autocomplete="off" aria-expanded="false" aria-controls="responseSuggestions" />
                     <div id="responseSuggestions" class="suggestions" role="listbox" aria-label="Response card suggestions"></div>
                   </div>
+                  <label class="target-control">
+                    <span>Response target</span>
+                    <select id="responseTarget">
+                      <option value="cast">The cast spell</option>
+                      <option value="cast-trigger">A cast trigger or ability</option>
+                      <option value="other">Something else</option>
+                    </select>
+                  </label>
                   <button id="setResponseCard" class="secondary-action">Set Response</button>
                   <div id="responseCardSlot" class="live-card-list"></div>
                 </div>
@@ -208,6 +226,39 @@
               <div id="questionAnswer" class="question-answer"></div>
             </section>
           </div>
+        </section>
+
+        <section id="library" class="view">
+          <section class="panel library-page" aria-label="Reference library">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Reference Library</p>
+                <h2>Examples and combo research</h2>
+              </div>
+            </div>
+            <label class="library-search">
+              <span>Filter</span>
+              <input id="librarySearch" type="search" placeholder="Search examples, combo pieces, or results" autocomplete="off" />
+            </label>
+            <div class="spellbook-sync">
+              <button id="syncSpellbook" type="button">Sync Commander Spellbook</button>
+              <button id="clearSpellbookCache" class="secondary-action" type="button">Clear Sync</button>
+              <a href="https://commanderspellbook.com/search/" target="_blank" rel="noreferrer">Open Spellbook</a>
+              <p id="spellbookStatus">Using starter combo set.</p>
+            </div>
+            <div class="library-tabs" role="tablist" aria-label="Reference library sections">
+              <button class="library-tab active" type="button" role="tab" aria-selected="true" data-library-tab="community">Community Examples</button>
+              <button class="library-tab" type="button" role="tab" aria-selected="false" data-library-tab="combos">Commander Combos</button>
+            </div>
+            <div class="library-content">
+              <div class="library-pane active" data-library-pane="community" role="tabpanel">
+                <div id="communityExamples" class="community-examples"></div>
+              </div>
+              <div class="library-pane" data-library-pane="combos" role="tabpanel">
+                <div id="comboResearch" class="combo-research"></div>
+              </div>
+            </div>
+          </section>
         </section>
       </main>
     </div>
